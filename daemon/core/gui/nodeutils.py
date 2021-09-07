@@ -21,7 +21,8 @@ RJ45_NODES: Set[NodeType] = {NodeType.RJ45}
 BRIDGE_NODES: Set[NodeType] = {NodeType.HUB, NodeType.SWITCH}
 IGNORE_NODES: Set[NodeType] = {NodeType.CONTROL_NET}
 MOBILITY_NODES: Set[NodeType] = {NodeType.WIRELESS_LAN, NodeType.EMANE}
-NODE_MODELS: Set[str] = {"router", "host", "PC", "mdr", "prouter"}
+NODE_MODELS: Set[str] = {"ovswitch", "router", "host", "PC", "mdr", "prouter"}#here add a node type to make the nodes default servcies canbe loaded in
+# ROUTER_NODES: Set[str] = {"ovswitch", "router", "mdr"}
 ROUTER_NODES: Set[str] = {"router", "mdr"}
 ANTENNA_ICON: Optional[PhotoImage] = None
 
@@ -29,6 +30,7 @@ ANTENNA_ICON: Optional[PhotoImage] = None
 def setup() -> None:
     global ANTENNA_ICON
     nodes = [
+        (ImageEnum.OVSWITCH, NodeType.DEFAULT, "OvSwitch", "ovswitch"),
         (ImageEnum.ROUTER, NodeType.DEFAULT, "Router", "router"),
         (ImageEnum.HOST, NodeType.DEFAULT, "Host", "host"),
         (ImageEnum.PC, NodeType.DEFAULT, "PC", "PC"),
