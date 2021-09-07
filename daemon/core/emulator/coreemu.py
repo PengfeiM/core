@@ -43,22 +43,27 @@ class CoreEmu:
 
         :param config: configuration options
         """
+        logging.debug("---------------Create a CoreEmu object-----------------------")
         # set umask 0
         os.umask(0)
 
+        logging.debug("Reading Configurations")
         # configuration
         if config is None:
             config = {}
         self.config: Dict[str, str] = config
 
+        logging.debug("Create a list to save sessions")
         # session management
         self.sessions: Dict[int, Session] = {}
 
         # load services
+        logging.debug("Loading services")
         self.service_errors: List[str] = []
         self.load_services()
 
         # config services
+        logging.debug("Config services")
         self.service_manager: ConfigServiceManager = ConfigServiceManager()
         config_services_path = os.path.abspath(os.path.dirname(configservices.__file__))
         self.service_manager.load(config_services_path)
