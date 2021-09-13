@@ -3,7 +3,10 @@ sdn.py defines services to start Open vSwitch and the Ryu SDN Controller.
 """
 
 import re
-from typing import Tuple
+import socket
+import binascii
+import netaddr
+from typing import Dict, List, Tuple
 
 from core.nodes.base import CoreNode
 from core.services.coreservices import CoreService
@@ -64,17 +67,28 @@ class OvsService(SdnService):
         cfg += "\n## Now add all our interfaces as ports to the switch\n"
 
         ifaces = node.get_ifaces()
+        ip_addrs = []
+
         port_num = 1
         for iface in ifaces:
             cfg += "## ---------iface: %s-----------------\n"%(iface.name)
             cfg += "## iface.net_id: %s\n"%(iface.net_id)
             cfg += "## add %s to ovs br\n"%(iface.name)
+            # record ip addr
+            ip_addrs.append((str)(iface.ip4s[0].ip))
             cfg += "ovs-vsctl --db=unix:db-%d.sock add-port %s %s -- set Interface %s ofport_request=%d\n"%(node.id, ovsbr_name, iface.name, iface.name, port_num)
             port_num += 1
         
-        cfg += "# add default flow table for test\n"
+        cfg += "\n\n# add default flow table for test\n"
 
-        return cfg
+        cfg += "\n# add flows to deal with arp and icmp \n"
+        port_num = 1
+        for iface in ifaces:
+            cfg += "ovs-ofctl add-flow %s table=0,in_port=%d,arp,arp_tpa=%s,arp_op=1,actions=move:\"NXM_OF_ETH_SRC[]->NXM_OF_ETH_DST[]\",mod_dl_src:\"%s\",load:\"0x02->NXM_OF_ARP_OP[]\",move:\"NXM_NX_ARP_SHA[]->NXM_NX_ARP_THA[]\",load:\"0x%s->NXM_NX_ARP_SHA[]\",move:\"NXM_OF_ARP_SPA[]->NXM_OF_ARP_TPA[]\",load:\"0x%s->NXM_OF_ARP_SPA[]\",in_port \n" % (ovsbr_name, port_num, ip_addrs[port_num - 1], iface.mac, ((str)(iface.mac).replace(":", "")), (binascii.hexlify((socket.inet_aton(ip_addrs[port_num - 1])))).decode('ascii') )#mac no problem
+            cfg += "ovs-ofctl add-flow %s table=0,in_port=%d,icmp,nw_dst=%s,icmp_type=8,icmp_code=0,actions=push:\"NXM_OF_ETH_SRC[]\",push:\"NXM_OF_ETH_DST[]\",pop:\"NXM_OF_ETH_SRC[]\",pop:\"NXM_OF_ETH_DST[]\",push:\"NXM_OF_IP_SRC[]\",push:\"NXM_OF_IP_DST[]\",pop:\"NXM_OF_IP_SRC[]\",pop:\"NXM_OF_IP_DST[]\",load:\"0xff->NXM_NX_IP_TTL[]\",load:\"0->NXM_OF_ICMP_TYPE[]\",in_port \n"%(ovsbr_name, port_num, ip_addrs[port_num - 1])
+            port_num += 1
+
+        return cfg  
 
     @classmethod
     def generate_ovs_stop(cls, node: CoreNode, filename: str) -> str:
