@@ -22,8 +22,9 @@ BRIDGE_NODES: Set[NodeType] = {NodeType.HUB, NodeType.SWITCH}
 IGNORE_NODES: Set[NodeType] = {NodeType.CONTROL_NET}
 MOBILITY_NODES: Set[NodeType] = {NodeType.WIRELESS_LAN, NodeType.EMANE}
 NODE_MODELS: Set[str] = {"ovswitch", "router", "host", "PC", "mdr", "prouter"}#here add a node type to make the nodes default servcies canbe loaded in
-# ROUTER_NODES: Set[str] = {"ovswitch", "router", "mdr"}
-ROUTER_NODES: Set[str] = {"router", "mdr"}
+# these two line of code can be switched to decide if ovs is a router node
+ROUTER_NODES: Set[str] = {"ovswitch", "router", "mdr"}
+#ROUTER_NODES: Set[str] = {"router", "mdr"}
 ANTENNA_ICON: Optional[PhotoImage] = None
 
 
