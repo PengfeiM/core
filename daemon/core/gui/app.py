@@ -75,7 +75,7 @@ class Application(ttk.Frame):
         self.style.theme_use(self.guiconfig.preferences.theme)
 
     def setup_app(self) -> None:
-        self.master.title("CORE")
+        self.master.title("CORE-INFONET")
         self.center()
         self.master.protocol("WM_DELETE_WINDOW", self.on_closing)
         image = images.from_enum(ImageEnum.CORE, width=images.DIALOG_SIZE)

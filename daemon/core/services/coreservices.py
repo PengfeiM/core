@@ -308,6 +308,7 @@ class CoreServices:
         self.default_services: Dict[str, List[str]] = {
             "mdr": ["zebra", "OSPFv3MDR", "IPForward"],
             "PC": ["DefaultRoute"],
+            "ovswitch": ["OvsService"],
             "prouter": [],
             "router": ["zebra", "OSPFv2", "OSPFv3", "IPForward"],
             "host": ["DefaultRoute", "SSH"],

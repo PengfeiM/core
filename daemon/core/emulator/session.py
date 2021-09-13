@@ -550,11 +550,11 @@ class Session:
             logging.debug("set node type: %s", node.type)
             self.services.add_services(node, node.type, options.services)
 
-            # add config services
-            logging.info("setting node config services: %s", options.config_services)
-            for name in options.config_services:
-                service_class = self.service_manager.get_service(name)
-                node.add_config_service(service_class)
+        #add config services
+        logging.info("setting node config services: %s", options.config_services)
+        for name in options.config_services:
+            service_class = self.service_manager.get_service(name)
+            node.add_config_service(service_class)
 
         # ensure default emane configuration
         if isinstance(node, EmaneNet) and options.emane:

@@ -1,4 +1,5 @@
 import os
+import datetime
 import shutil
 from pathlib import Path
 from typing import Dict, List, Optional, Type
@@ -15,7 +16,7 @@ ICONS_PATH: Path = HOME_PATH.joinpath("icons")
 MOBILITY_PATH: Path = HOME_PATH.joinpath("mobility")
 XMLS_PATH: Path = HOME_PATH.joinpath("xmls")
 CONFIG_PATH: Path = HOME_PATH.joinpath("config.yaml")
-LOG_PATH: Path = HOME_PATH.joinpath("gui.log")
+LOG_PATH: Path = HOME_PATH.joinpath("gui" + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + ".log")
 SCRIPT_PATH: Path = HOME_PATH.joinpath("scripts")
 
 # local paths

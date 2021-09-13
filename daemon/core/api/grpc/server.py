@@ -1,6 +1,8 @@
 import atexit
 import logging
 import os
+import sys 
+import subprocess
 import re
 import tempfile
 import threading
@@ -220,13 +222,37 @@ class CoreGrpcServer(core_pb2_grpc.CoreApiServicer):
         session = self.get_session(request.session_id, context)
 
         # clear previous state and setup for creation
+        logging.debug("Clear Session")
         session.clear()
+        logging.debug("Session Clear: Done")
         if not os.path.exists(session.session_dir):
             os.mkdir(session.session_dir)
         session.set_state(EventTypes.CONFIGURATION_STATE)
 
+        #if there are any node needs ovs, then boot ovs
+        # added at 2021/08/05
+        # ovs_flag = True
+        # for node_num in session.nodes:
+        #     node = session.nodes[node_num]
+        #     logging.debug(node.services)
+        #     if "OvsService" in node.services:
+        #         ovs_flag = True
+        # if ovs_flag:
+        #     cmd = "#!/bin/bash\n"
+        #     cmd += "echo 1 | sudo -S ovsdb-server --remote=punix:/usr/local/var/run/openvswitch/db.sock     \
+        #             --remote=db:Open_vSwitch,Open_vSwitch,manager_options \
+        #             --private-key=db:Open_vSwitch,SSL,private_key     --certificate=db:Open_vSwitch,SSL,certificate     \
+        #             --bootstrap-ca-cert=db:Open_vSwitch,SSL,ca_cert     --pidfile --detach --log-file\n"
+        #     cmd += "sudo ovs-vsctl --no-wait init\n"
+        #     cmd += "sudo ovs-vswitchd --pidfile --detach --log-file\n"
+        #     os.system(cmd)
+        #     logging.info("Ovs is booted")
+        # else:
+        #     logging.info("Ovs is not needed.")
+
         # location
         if request.HasField("location"):
+            logging.debug("set location at: %s", request.location)
             grpcutils.session_location(session, request.location)
 
         # add all hooks
@@ -314,6 +340,19 @@ class CoreGrpcServer(core_pb2_grpc.CoreApiServicer):
         :return: stop session response
         """
         logging.debug("stop session: %s", request)
+        # stop ovs process and clear all ovsbr
+        # added at 2021/08/05,need import(sys, subprocess)
+        # last changed at 2021/08/06
+        # cmd = "echo 1 | sudo ovs-vsctl list-br"
+        # ovsbrs = os.popen(cmd).read().splitlines()
+        # logging.info("there are %d ovsbr need to be deleted"%(ovsbrs.__len__()))
+        # for ovsbr in ovsbrs:
+        #     cmd = "echo 1 | sudo ovs-vsctl del-br %s"%(ovsbr)
+        #     os.system(cmd)
+        # cmd = "echo 1 | sudo -S kill `cd /usr/local/var/run/openvswitch && cat ovsdb-server.pid ovs-vswitchd.pid`"
+        # os.system(cmd)
+        # logging.debug("kill ovs process")
+
         session = self.get_session(request.session_id, context)
         session.data_collect()
         session.shutdown()

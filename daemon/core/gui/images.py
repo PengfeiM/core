@@ -1,3 +1,5 @@
+
+import logging
 from enum import Enum
 from typing import Dict, Optional, Tuple
 
@@ -16,10 +18,15 @@ IMAGES: Dict[str, str] = {}
 
 
 def load_all() -> None:
-    for image in LOCAL_ICONS_PATH.glob("*"):
+    i = 1
+    images = LOCAL_ICONS_PATH.glob("*")
+    logging.debug(images)
+    for image in images:
         try:
+            logging.debug("load image " +str(i)+ ": " + str(image))
             ImageEnum(image.stem)
             IMAGES[image.stem] = str(image)
+            i = i + 1
         except ValueError:
             pass
 
@@ -64,6 +71,7 @@ class ImageEnum(Enum):
     MDR = "mdr"
     PROUTER = "prouter"
     OVS = "OVS"
+    OVSWITCH = "ovswitch"#added at 2021/07/28
     EDITNODE = "edit-node"
     PLOT = "plot"
     TWONODE = "twonode"
@@ -87,6 +95,7 @@ class ImageEnum(Enum):
 
 
 TYPE_MAP: Dict[Tuple[NodeType, str], ImageEnum] = {
+    (NodeType.DEFAULT, "ovswitch"): ImageEnum.OVSWITCH,# added at 2021/07/28
     (NodeType.DEFAULT, "router"): ImageEnum.ROUTER,
     (NodeType.DEFAULT, "PC"): ImageEnum.PC,
     (NodeType.DEFAULT, "host"): ImageEnum.HOST,

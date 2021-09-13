@@ -179,8 +179,11 @@ class InterfaceManager:
     ) -> None:
         src_node = canvas_src_node.core_node
         dst_node = canvas_dst_node.core_node
-        is_src_container = nutils.is_container(src_node)
+        # change here to make the ovs node not change diffrent subnet.
+        is_src_container = nutils.is_container(src_node) 
         is_dst_container = nutils.is_container(dst_node)
+        #is_src_container = nutils.is_container(src_node) and src_node.model != "ovswitch"
+        #is_dst_container = nutils.is_container(dst_node) and src_node.model != "ovswitch"
         if is_src_container and is_dst_container:
             self.current_subnets = self.next_subnets()
         elif is_src_container and not is_dst_container:
